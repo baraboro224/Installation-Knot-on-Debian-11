@@ -1,0 +1,92 @@
+Repository:
+
+Knot DNS is already available from Debian 7 (Wheezy) upwards. In addition to the official packages we also provide custom repository, which can be used by adding:
+Install prerequisites:
+Debian based distributions
+
+## Update the system:
+
+sudo apt-get update
+sudo apt-get upgrade
+
+## Install prerequisites:
+
+sudo apt-get install libtool autoconf automake make pkg-config liburcu-dev libgnutls28-dev libedit-dev liblmdb-dev
+
+## Install optional packages:
+
+sudo apt-get install libcap-ng-dev libsystemd-dev libidn2-0-dev libprotobuf-c-dev protobuf-c-compiler libfstrm-dev libmaxminddb-dev libnghttp2-dev libbpf-dev libmnl-dev
+
+Enable this repository:
+
+${SUDO} apt-get -y install apt-transport-https lsb-release ca-certificates wget
+${SUDO} wget -O /usr/share/keyrings/knot.gpg https://deb.knot-dns.cz/apt.gpg
+${SUDO} sh -c 'echo "deb [signed-by=/usr/share/keyrings/knot.gpg] https://deb.knot-dns.cz/knot-latest/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/knot-latest.list'
+${SUDO} apt-get update
+
+Install Knot DNS server:
+
+${SUDO} apt-get install knot
+${SUDO} apt-get install knot-dnsutils
+
+Configuration Knot DNS server:
+
+cd /etc/knot
+cp knot.conf knot.conf.old
+nano knot.conf
+***********File Contain***********
+# This is a sample of a minimal configuration file for Knot DNS.
+# See knot.conf(5) or refer to the server documentation.
+
+server:
+    rundir: "/run/knot"
+    user: knot:knot
+    automatic-acl: on
+    listen: [ 51.83.156.211@53, 127.0.0.1@53, ::1@53 ]
+
+log:
+  - target: syslog
+    any: info
+
+database:
+    storage: "/var/lib/knot"
+
+key:
+  - id: key1                           # The real TSIG key name
+    algorithm: hmac-sha256
+    secret: 4Tc0K1QkcMCs7cOW2LuSWnxQY0qysdvsZlSb4yTN9pA=
+
+policy:
+  - id: custom_policy
+    signing-threads: 4
+    algorithm: ECDSAP256SHA256
+    zsk-lifetime: 60d
+
+remote:
+#  - id: secondary
+#    address: 192.168.1.1@53
+#
+#  - id: primary
+#    address: 192.168.2.1@53
+
+template:
+  - id: default
+    storage: "/var/lib/knot"
+    file: "%s.zone"
+    dnssec-signing: on
+    semantic-checks: on
+
+zone:
+#    # Primary zone
+#  - domain: trial.gn
+#    file: trial.gn.zone
+#    dnssec-signing: on
+#    dnssec-policy: custom_policy
+************end************
+
+systemctl restart knot.service
+systemctl status knot.service
+
+Contributing
+
+Any suggestion is welcome.
