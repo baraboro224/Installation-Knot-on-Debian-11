@@ -19,17 +19,17 @@ sudo apt-get install libcap-ng-dev libsystemd-dev libidn2-0-dev libprotobuf-c-de
 
 Enable this repository:
 
-${SUDO} apt-get -y install apt-transport-https lsb-release ca-certificates wget
-${SUDO} wget -O /usr/share/keyrings/knot.gpg https://deb.knot-dns.cz/apt.gpg
-${SUDO} sh -c 'echo "deb [signed-by=/usr/share/keyrings/knot.gpg] https://deb.knot-dns.cz/knot-latest/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/knot-latest.list'
-${SUDO} apt-get update
+apt-get -y install apt-transport-https lsb-release ca-certificates wget
+wget -O /usr/share/keyrings/knot.gpg https://deb.knot-dns.cz/apt.gpg
+sh -c 'echo "deb [signed-by=/usr/share/keyrings/knot.gpg] https://deb.knot-dns.cz/knot-latest/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/knot-latest.list'
+apt-get update
 
-Install Knot DNS server:
+## Install Knot DNS server:
 
-${SUDO} apt-get install knot
-${SUDO} apt-get install knot-dnsutils
+apt-get install knot
+apt-get install knot-dnsutils
 
-Configuration Knot DNS server:
+## Configuration Knot DNS server:
 
 cd /etc/knot
 cp knot.conf knot.conf.old
@@ -42,7 +42,7 @@ server:
     rundir: "/run/knot"
     user: knot:knot
     automatic-acl: on
-    listen: [ 51.83.156.211@53, 127.0.0.1@53, ::1@53 ]
+    listen: [  127.0.0.1@53, ::1@53 ]
 
 log:
   - target: syslog
@@ -83,10 +83,10 @@ zone:
 #    dnssec-signing: on
 #    dnssec-policy: custom_policy
 ************end************
-
+## Restart the service ##
 systemctl restart knot.service
 systemctl status knot.service
 
-Contributing
+##Contributing##
 
 Any suggestion is welcome.
